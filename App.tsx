@@ -128,6 +128,8 @@ interface AppContextType {
   depositAmount: string;
   setDepositAmount: React.Dispatch<React.SetStateAction<string>>;
   showToast: (message: string) => void;
+  hasShownVerificationToast: boolean;
+  setHasShownVerificationToast: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -185,7 +187,7 @@ const Toast: React.FC<{ message: string; onClose: () => void; }> = ({ message, o
 
     return (
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#00e77c] text-black p-4 rounded-lg shadow-lg flex justify-between items-center z-50 animate-fade-in-down">
-            <span className="text-[10px] font-normal">{message}</span>
+            <span className="text-[12px] font-normal">{message}</span>
             <button onClick={onClose}>
                 <CloseIcon className="w-5 h-5" />
             </button>
@@ -434,7 +436,11 @@ const HomeScreen: React.FC = () => {
 };
 
 const DepositSelectScreen: React.FC = () => {
-    const { setScreen, setSelectedPixKey } = useAppContext();
+    const { setScreen, setSelectedPixKey, setHasShownVerificationToast } = useAppContext();
+
+    useEffect(() => {
+        setHasShownVerificationToast(false);
+    }, [setHasShownVerificationToast]);
 
     const handleSelect = (key: PixKeyType) => {
         setSelectedPixKey(key);
@@ -575,12 +581,15 @@ const DepositConfirmScreen: React.FC = () => {
 };
 
 const DepositAmountScreen: React.FC = () => {
-    const { setScreen, depositAmount, setDepositAmount, showToast } = useAppContext();
+    const { setScreen, depositAmount, setDepositAmount, showToast, hasShownVerificationToast, setHasShownVerificationToast } = useAppContext();
     const [localAmount, setLocalAmount] = useState(depositAmount);
     
     useEffect(() => {
-        showToast("Chave Pix verificada e conta validada com sucesso!");
-    }, [showToast]);
+        if (!hasShownVerificationToast) {
+            showToast("Chave Pix verificada e conta validada com sucesso!");
+            setHasShownVerificationToast(true);
+        }
+    }, [showToast, hasShownVerificationToast, setHasShownVerificationToast]);
 
     const presetAmounts = ["10", "15", "20", "30", "50", "100"];
 
@@ -596,7 +605,7 @@ const DepositAmountScreen: React.FC = () => {
     
     return (
          <div className="flex flex-col h-full bg-white">
-            <Header title="Depósito" onBack={() => setScreen(Screen.DepositConfirm)} onClose={() => setScreen(Screen.Home)} />
+            <Header title="Depósito" onClose={() => setScreen(Screen.Home)} />
             <div className="p-6 flex-grow">
                 <h2 className="text-2xl font-bold text-black mb-6">Valor do depósito</h2>
                 <div className="relative">
@@ -638,6 +647,7 @@ const DepositAmountScreen: React.FC = () => {
 
 const DepositReviewScreen: React.FC = () => {
     const { setScreen, depositAmount, showToast } = useAppContext();
+    const [isQrCodeVisible, setIsQrCodeVisible] = useState(false);
 
     const handleCopy = () => {
         const pixCode = "0002010102122683001400...";
@@ -687,7 +697,18 @@ const DepositReviewScreen: React.FC = () => {
                     <input type="text" readOnly value="0002010102122683001400..." className="w-full bg-gray-100 rounded-md px-3 text-base border-gray-200 text-gray-600"/>
                     <button onClick={handleCopy} className="bg-[#00e77c] text-black font-semibold px-6 py-3 rounded-md text-sm">Copiar</button>
                 </div>
-                 <button className="w-full text-center py-2 text-gray-600 font-semibold mt-2">Abrir QR Code</button>
+                 <button onClick={() => setIsQrCodeVisible(!isQrCodeVisible)} className="w-full text-center py-2 text-gray-600 font-semibold mt-2">
+                    {isQrCodeVisible ? "Fechar QR Code" : "Abrir QR Code"}
+                 </button>
+                 {isQrCodeVisible && (
+                    <div className="flex justify-center mt-4">
+                        <img
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=00020101021226830014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR5913APayeeName6009SaoPaulo62070503***63041D3D"
+                            alt="PIX QR Code"
+                            className="w-40 h-40"
+                        />
+                    </div>
+                 )}
             </div>
         </div>
     );
@@ -701,6 +722,7 @@ const App: React.FC = () => {
     const [selectedPixKey, setSelectedPixKey] = useState<PixKeyType | null>(null);
     const [depositAmount, setDepositAmount] = useState('50');
     const [toastMessage, setToastMessage] = useState('');
+    const [hasShownVerificationToast, setHasShownVerificationToast] = useState(false);
 
     const showToast = useCallback((message: string) => {
         setToastMessage(message);
@@ -715,7 +737,9 @@ const App: React.FC = () => {
         depositAmount,
         setDepositAmount,
         showToast,
-    }), [userData, selectedPixKey, depositAmount, showToast]);
+        hasShownVerificationToast,
+        setHasShownVerificationToast,
+    }), [userData, selectedPixKey, depositAmount, showToast, hasShownVerificationToast]);
 
     const renderScreen = useCallback(() => {
         switch (screen) {
