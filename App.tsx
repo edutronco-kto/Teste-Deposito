@@ -1,3 +1,4 @@
+
 import React, { useState, createContext, useContext, useMemo, useCallback, useEffect } from 'react';
 
 // SECTION: TYPES
@@ -175,7 +176,7 @@ const Toast: React.FC<{ message: string; onClose: () => void; }> = ({ message, o
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
-        }, 10000); // 10 seconds
+        }, 3000); // 3 seconds
 
         return () => {
             clearTimeout(timer);
@@ -184,7 +185,7 @@ const Toast: React.FC<{ message: string; onClose: () => void; }> = ({ message, o
 
     return (
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#00e77c] text-black p-4 rounded-lg shadow-lg flex justify-between items-center z-50 animate-fade-in-down">
-            <span className="font-medium">{message}</span>
+            <span className="text-[10px] font-normal">{message}</span>
             <button onClick={onClose}>
                 <CloseIcon className="w-5 h-5" />
             </button>
@@ -224,7 +225,7 @@ const RegisterScreen: React.FC = () => {
                             placeholder="999.999.999-99"
                             value={localCpf}
                             onChange={handleCpfChange}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-base shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
                         />
                     </div>
                     <div>
@@ -234,7 +235,7 @@ const RegisterScreen: React.FC = () => {
                             placeholder="Preencha seu email"
                             value={userData.email}
                             onChange={e => setUserData(prev => ({ ...prev, email: e.target.value }))}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-base shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
                         />
                     </div>
                     <div>
@@ -245,7 +246,7 @@ const RegisterScreen: React.FC = () => {
                             value={userData.phone}
                             maxLength={11}
                             onChange={e => setUserData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-base shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
                         />
                     </div>
                 </div>
@@ -521,7 +522,7 @@ const DepositConfirmScreen: React.FC = () => {
                             value={getValue()}
                             onChange={handleValueChange}
                             placeholder={isRandomKey ? 'Insira sua chave aleatória' : ''}
-                            className="mt-1 block w-full px-3 py-3 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
+                            className="mt-1 block w-full px-3 py-3 bg-white border border-gray-300 rounded-md text-base shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-black"
                         />
                     ) : (
                         <div className="mt-1 block w-full px-3 py-3 bg-gray-100 border border-gray-200 rounded-md text-black">
@@ -683,7 +684,7 @@ const DepositReviewScreen: React.FC = () => {
             <div className="p-6 border-t">
                 <p className="text-center font-semibold mb-3 text-gray-800">Copie o código PIX abaixo</p>
                 <div className="flex space-x-2">
-                    <input type="text" readOnly value="0002010102122683001400..." className="w-full bg-gray-100 rounded-md px-3 text-sm border-gray-200 text-gray-600"/>
+                    <input type="text" readOnly value="0002010102122683001400..." className="w-full bg-gray-100 rounded-md px-3 text-base border-gray-200 text-gray-600"/>
                     <button onClick={handleCopy} className="bg-[#00e77c] text-black font-semibold px-6 py-3 rounded-md text-sm">Copiar</button>
                 </div>
                  <button className="w-full text-center py-2 text-gray-600 font-semibold mt-2">Abrir QR Code</button>
